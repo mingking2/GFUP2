@@ -35,6 +35,7 @@ public class MemberController {
     public ResponseEntity<LoginRequestDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response){
        try{
            memberService.login(loginRequestDto, response);
+           return new ResponseEntity<>(HttpStatus.OK);
        } catch (Exception e){
            e.printStackTrace();
        }

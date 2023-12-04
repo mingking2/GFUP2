@@ -38,7 +38,7 @@ public class MemberService{
         memberRepository.save(member);
     }
 
-    public LoginResponseDto login(LoginRequestDto login, HttpServletResponse response){
+    public void login(LoginRequestDto login, HttpServletResponse response){
 
         // 아이디 검사
         Member member = memberRepository.findByemailId(login.getEmailId()).orElseThrow(
@@ -64,11 +64,8 @@ public class MemberService{
             RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), login.getEmailId());
             refreshTokenRepository.save(newToken);
         }
-
         // response 헤더에 Access Token / Refresh Token 넣음
         setHeader(response, tokenDto);
-        return new LoginResponseDto("Success Login", HttpStatus.OK.value());
-
     }
 
     private void setHeader(HttpServletResponse response, TokenDto tokenDto) {

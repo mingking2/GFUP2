@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class LoginRequestDto {
 
-
     @Column(nullable=false)
     @NotBlank(message = "이메일은 필수 값입니다.")
     @Email(message = "유효한 이메일 주소를 입력해주세요")

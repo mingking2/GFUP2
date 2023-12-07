@@ -1,8 +1,10 @@
 package com.example.gfup2.web.user.service;
 
 
+import com.example.gfup2.domain.user.entity.RefreshToken;
 import com.example.gfup2.domain.user.entity.User;
 import com.example.gfup2.domain.user.entity.UserRoleEnum;
+import com.example.gfup2.domain.user.repository.RefreshTokenRepository;
 import com.example.gfup2.domain.user.repository.UserRepository;
 import com.example.gfup2.web.auth.jwt.JwtUtil;
 import com.example.gfup2.web.auth.dto.TokenDto;
@@ -21,6 +23,7 @@ public class UserService {
 
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -46,9 +49,15 @@ public class UserService {
 
         //유저가 존재하면
         if (passwordEncoder.matches(form.getPassword(), user.getPassword())) { //패스워드 확인 후 맞으면
-            //토큰 발급
 
-            return jwtUtil.generateToken(user.getEmailId());
+            //토큰 발급
+            TokenDto tokenDto = jwtUtil.generateToken(user.getEmailId());
+
+            RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmailId());
+            refreshTokenRepository.save(refreshToken);
+
+
+            return tokenDto;
         }
 
         throw new IllegalArgumentException("패스워드가 다름");

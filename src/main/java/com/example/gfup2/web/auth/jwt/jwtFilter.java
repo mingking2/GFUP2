@@ -1,6 +1,8 @@
 package com.example.gfup2.web.auth.jwt;
 
 import com.example.gfup2.domain.user.UserDetailsServiceImpl;
+import com.example.gfup2.domain.user.entity.RefreshToken;
+import com.example.gfup2.domain.user.repository.RefreshTokenRepository;
 import com.example.gfup2.web.auth.dto.TokenDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,6 +25,7 @@ public class jwtFilter extends OncePerRequestFilter {
 
     private JwtUtil jwtUtil;
     private UserDetailsServiceImpl userDetailsService;
+    private RefreshTokenRepository refreshTokenRepository;
 
 
 
@@ -44,13 +47,14 @@ public class jwtFilter extends OncePerRequestFilter {
 
     private void handleAuthentication(HttpServletRequest request, HttpServletResponse response) {
         String accessToken = jwtUtil.parseJwtAccess(request);
-        log.info(accessToken);
         String refreshToken = jwtUtil.parseJwtRefresh(request);
 
         if (accessToken != null && jwtUtil.isTokenValid(accessToken)) {
             authenticateWithToken(accessToken);
         } else if (jwtUtil.refreshTokenValidation(refreshToken)) {
             handleRefreshToken(refreshToken, response);
+        } else {
+            log.info("accessToken과 refreshToken 둘다 만료되었습니다.");
         }
     }
 
@@ -68,7 +72,7 @@ public class jwtFilter extends OncePerRequestFilter {
         TokenDto tokenDto = jwtUtil.generateToken(loginEmail);
         response.setHeader("accessToken", tokenDto.getAccessToken());
         response.setHeader("refreshToken", tokenDto.getRefreshToken());
-        UserDetails userDetails = userDetailsService.loadUserByUsername(loginEmail);
+        refreshTokenRepository.updateTokenValueByEmail(loginEmail, tokenDto.getRefreshToken());
         authenticateWithToken(tokenDto.getAccessToken());
         log.info("refreshed and authenticated user with username: {}", loginEmail);
     }

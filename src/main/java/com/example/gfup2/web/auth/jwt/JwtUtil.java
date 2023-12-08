@@ -28,7 +28,7 @@ public class JwtUtil {
 
     @Value("${hidden.jwtSecret}")
     private String jwtSecret;
-    private final long ACCESS_TOKEN_VALID_PERIOD = 10000L;
+    private final long ACCESS_TOKEN_VALID_PERIOD = 1000L*60*30;
 //1000L*60*30; // 1분
     private final long REFRESH_TOKEN_VALID_PERIOD = 1000L*60*60*24*7;
     private final Set<String> invalidatedTokens = new HashSet<>();

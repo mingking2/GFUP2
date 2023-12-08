@@ -66,26 +66,9 @@ public class UserController {
     })
     @PostMapping("/auth/logout")
     public ResponseEntity<String> logoutUser(HttpServletRequest request) {
-        String accessToken = jwtUtil.parseJwtAccess(request);
+        //String accessToken = jwtUtil.parseJwtAccess(request);
         String refreshToken = jwtUtil.parseJwtRefresh(request);
-        if (accessToken != null) {
-            // 무효화된 토큰인지 여부를 확인하고, 무효화되었으면 응답
-            if (!jwtUtil.isTokenValid(accessToken)) {
-                return ResponseEntity.badRequest().body("Token is already invalidated");
-            }
-
-            // 토큰을 무효화시키는 메서드 호출
-            jwtUtil.invalidateToken(accessToken);
-
-            // 무효화된 토큰인지 여부를 다시 확인
-            if (!jwtUtil.isTokenValid(accessToken)) {
-                return ResponseEntity.ok().body("Logged out successfully");
-            } else {
-                return ResponseEntity.badRequest().body("Failed to invalidate the token");
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Token not found in the request");
-        }
+        return userService.logoutUser(refreshToken);
     }
 
     @Operation(summary = "인가 테스트용", description = "인가상태인지 확인하고 test를 반환합니다.")

@@ -13,6 +13,7 @@ import com.example.gfup2.web.user.dto.SignupForm;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,14 @@ public class UserService {
         }
 
         throw new IllegalArgumentException("패스워드가 다름");
+    }
+
+    public ResponseEntity<String> logoutUser(String refreshToken) {
+        if(refreshToken != null) {
+            refreshTokenRepository.deleteByRefreshToken(refreshToken);
+            return ResponseEntity.ok().body("Logged out successfully");
+        }
+        return ResponseEntity.badRequest().body("리프레쉬 토큰이 왜 없지");
     }
 
     public String getHeaders(String authorization) {

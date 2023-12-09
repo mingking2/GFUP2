@@ -18,4 +18,5 @@ public class SigninForm {
     @NotNull
     @Schema(description = "사용자 비밀번호", nullable = false, example = "k12@gmail.com")
     private String password;
+
 }

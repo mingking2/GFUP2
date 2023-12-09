@@ -54,8 +54,8 @@ public class User {
         user.emailId = form.getEmailId();
         user.password = password;
         user.phoneNumber = form.getPhoneNumber();
-        user.alarmEmailInfo = form.getAlarmEmailInfo();
-        user.alarmPhoneNumberInfo = form.getAlarmPhoneNumberInfo();
+        user.alarmEmailInfo = form.getEmailId();
+        user.alarmPhoneNumberInfo = form.getPhoneNumber();
         user.role = role;
         return user;
     }

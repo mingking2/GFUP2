@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class RefreshToken { //로그인 성공할시 Refresh토큰을 DB에 저장을 위한 Domain
+public class RefreshToken { //로그인 성공할시 Refresh 토큰을 DB에 저장을 위한 Domain
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

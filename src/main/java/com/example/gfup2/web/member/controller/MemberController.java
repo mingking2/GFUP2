@@ -1,5 +1,6 @@
 package com.example.gfup2.web.member.controller;
 
+import com.example.gfup2.jwt.dto.TokenDto;
 import com.example.gfup2.web.member.dto.LoginRequestDto;
 import com.example.gfup2.web.member.dto.RegisterRequestDto;
 import com.example.gfup2.web.member.service.MemberService;
@@ -32,10 +33,11 @@ public class MemberController {
    }
 
    @PostMapping("/login")
-    public ResponseEntity<LoginRequestDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response){
+    public ResponseEntity<TokenDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response){
        try{
-           memberService.login(loginRequestDto, response);
-           return new ResponseEntity<>(HttpStatus.OK);
+           TokenDto responseToken = memberService.login(loginRequestDto, response);
+           return ResponseEntity.ok(responseToken);
+
        } catch (Exception e){
            e.printStackTrace();
        }

@@ -1,18 +1,17 @@
 package com.example.gfup2.web.member.service;
 
+import com.example.gfup2.domain.entity.UserRoleEnum;
 import com.example.gfup2.jwt.dto.TokenDto;
 import com.example.gfup2.jwt.entity.RefreshToken;
 import com.example.gfup2.jwt.repository.RefreshTokenRepository;
-import com.example.gfup2.jwt.service.TokenProvider;
-import com.example.gfup2.domain.member.entity.Member;
-import com.example.gfup2.domain.member.repository.MemberRepository;
+import com.example.gfup2.jwt.service.JwtUtil;
+import com.example.gfup2.domain.entity.Member;
+import com.example.gfup2.repository.MemberRepository;
 import com.example.gfup2.web.member.dto.LoginRequestDto;
-import com.example.gfup2.web.member.dto.LoginResponseDto;
 import com.example.gfup2.web.member.dto.RegisterRequestDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class MemberService{
     private final RefreshTokenRepository refreshTokenRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
+    private final JwtUtil jwtUtil;
 
     public void register(RegisterRequestDto register) {
         memberRepository.findByemailId(register.getEmailId())
@@ -35,11 +34,13 @@ public class MemberService{
 
         Member member = register.toEntity();
         member.encodePassword(passwordEncoder); // 비밀번호 해시화
+        UserRoleEnum role = UserRoleEnum.USER;
+        member.setRoles(role);
         memberRepository.save(member);
     }
 
-    public void login(LoginRequestDto login, HttpServletResponse response){
-
+    public TokenDto login(LoginRequestDto login, HttpServletResponse response){
+        log.debug("login");
         // 아이디 검사
         Member member = memberRepository.findByemailId(login.getEmailId()).orElseThrow(
                 () -> new RuntimeException("Not found Account")
@@ -51,7 +52,7 @@ public class MemberService{
         }
 
         // 아이디 정보로 Token생성
-        TokenDto tokenDto = tokenProvider.createAllToken(login.getEmailId()); //jwtUtil.createAllToken(loginReqDto.getNickname());
+        TokenDto tokenDto = jwtUtil.createAllToken(login.getEmailId()); //jwtUtil.createAllToken(loginReqDto.getNickname());
 
         // Refresh토큰 있는지 확인
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByAccountEmail(login.getEmailId());
@@ -66,11 +67,12 @@ public class MemberService{
         }
         // response 헤더에 Access Token / Refresh Token 넣음
         setHeader(response, tokenDto);
+        return tokenDto;
     }
 
     private void setHeader(HttpServletResponse response, TokenDto tokenDto) {
-        response.addHeader(TokenProvider.ACCESS_TOKEN, tokenDto.getAccessToken());
-        response.addHeader(TokenProvider.REFRESH_TOKEN, tokenDto.getRefreshToken());
+        response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
+        response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
 
 }

@@ -2,6 +2,7 @@ package com.example.gfup2.jwt.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 
 @Getter
 @NoArgsConstructor

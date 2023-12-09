@@ -11,53 +11,51 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final TokenProvider jwtUtil;
+    private final JwtUtil jwtUtil;
     @Override
     // HTTP 요청이 오면 WAS(tomcat)가 HttpServletRequest, HttpServletResponse 객체를 만들어 줍니다.
     // 만든 인자 값을 받아옵니다.
     // 요청이 들어오면 doiFilterInternal 이 딱 한번 실행된다.
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // WebSecurityConfig 에서 보았던 UsernamePasswordAuthenticationFilter 보다 먼저 동작을 하게 됩니다.
-
         // Access / Refresh 헤더에서 토큰을 가져옴.
         String accessToken = jwtUtil.getHeaderToken(request, "Access");
         String refreshToken = jwtUtil.getHeaderToken(request, "Refresh");
 
-        if(accessToken != null) {
-            // 어세스 토큰값이 유효하다면 setAuthentication를 통해
-            // security context에 인증 정보저장
-            if(jwtUtil.tokenValidation(accessToken)){
-                setAuthentication(jwtUtil.getEmailFromToken(accessToken));
+        // 어세스 토큰값이 유효하다면 setAuthentication를 통해 security context에 인증 정보저장
+        if(jwtUtil.tokenValidation(accessToken)){
+            setAuthentication(jwtUtil.getEmailFromToken(accessToken));
+        }
+        //어세스 토큰값 유효하지 않음
+        else {
+            if(refreshToken==null) { //클라이언트에게 어세스토큰이 만료되었음을 알림 -> 그 뒤 클라이언트가 refreshToken을 보낼것.
+                jwtExceptionHandler(response, "AccessToken Expired", HttpStatus.UNAUTHORIZED);
             }
-
-            // 어세스 토큰이 만료된 상황 && 리프레시 토큰 또한 존재하는 상황
-            else if (refreshToken != null) {
-                // 리프레시 토큰 검증 && 리프레시 토큰 DB에서  토큰 존재유무 확인
-                boolean isRefreshToken = jwtUtil.refreshTokenValidation(refreshToken);
-                // 리프레시 토큰이 유효하고 리프레시 토큰이 DB와 비교했을때 똑같다면
-                if (isRefreshToken) {
-                    // 리프레시 토큰으로 아이디 정보 가져오기
-                    String loginId = jwtUtil.getEmailFromToken(refreshToken);
-                    // 새로운 어세스 토큰 발급
-                    String newAccessToken = jwtUtil.createToken(loginId, "Access");
-                    // 헤더에 어세스 토큰 추가
-                    jwtUtil.setHeaderAccessToken(response, newAccessToken);
-                    // Security context에 인증 정보 넣기
-                    setAuthentication(jwtUtil.getEmailFromToken(newAccessToken));
-                }
-                // 리프레시 토큰이 만료 || 리프레시 토큰이 DB와 비교했을때 똑같지 않다면
-                else {
-                    jwtExceptionHandler(response, "RefreshToken Expired", HttpStatus.BAD_REQUEST);
-                    return;
-                }
+            else if (jwtUtil.refreshTokenValidation(refreshToken)) {
+                log.debug("새로운 어세스토큰 발급");
+                // 리프레시 토큰으로 아이디 정보 가져오기
+                String loginId = jwtUtil.getEmailFromToken(refreshToken);
+                // 새로운 어세스 토큰 발급
+                String newAccessToken = jwtUtil.createToken(loginId, "Access");
+                // 헤더에 어세스 토큰 추가
+                //jwtUtil.setHeaderAccessToken(response, newAccessToken);
+                // Security context에 인증 정보 넣기
+                setAuthentication(jwtUtil.getEmailFromToken(newAccessToken));
+            }
+            // 리프레시 토큰이 만료 || 리프레시 토큰이 DB와 비교했을때 똑같지 않다면
+            else {
+                jwtExceptionHandler(response, "RefreshToken Validate Fail", HttpStatus.BAD_REQUEST);
+                return;
             }
         }
 
@@ -83,5 +81,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             log.error(e.getMessage());
         }
     }
+
 }
 

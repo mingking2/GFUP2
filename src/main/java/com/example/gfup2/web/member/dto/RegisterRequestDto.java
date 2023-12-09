@@ -1,7 +1,10 @@
 package com.example.gfup2.web.member.dto;
 
-import com.example.gfup2.domain.member.entity.Member;
+import com.example.gfup2.domain.entity.Member;
+import com.example.gfup2.domain.entity.UserRoleEnum;
 import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -44,6 +47,7 @@ public class RegisterRequestDto {
     @Column(nullable=false)
     @Size(min=9, max=9, message="입력값은 9자리여야 합니다.")
     private String alarmPhoneNumberInfo;
+
 
     @Builder
     public Member toEntity(){ //해당 Dto를 entity로 변환

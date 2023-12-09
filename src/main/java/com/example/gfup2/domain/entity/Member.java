@@ -1,12 +1,9 @@
-package com.example.gfup2.domain.member.entity;
+package com.example.gfup2.domain.entity;
 
-import io.swagger.v3.oas.annotations.info.Contact;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 @Entity
 @Builder
@@ -22,9 +19,11 @@ public class Member {
     private String phoneNumber;
     private String alarmEmailInfo;
     private String alarmPhoneNumberInfo;
-
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum roles;
     public void encodePassword(PasswordEncoder passwordEncoder){
         this.password = passwordEncoder.encode(password);
     }
+
 
 }

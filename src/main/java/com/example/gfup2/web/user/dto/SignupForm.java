@@ -29,9 +29,8 @@ public class SignupForm {
     private String password;
 
     @Column(nullable=false)
-    @Size(min=9, max=9, message="입력값은 9자리여야 합니다.")
+    @Size(min=11, max=11, message="입력값은 9자리여야 합니다.")
     @Schema(description = "사용자 핸드폰 번호", nullable = false, example = "010-12-31")
     private String phoneNumber;
 
-    private String adminToken= "";
 }

@@ -51,7 +51,7 @@ public class jwtFilter extends OncePerRequestFilter {
 
         if (accessToken != null && jwtUtil.isTokenValid(accessToken)) {
             authenticateWithToken(accessToken);
-        } else if (jwtUtil.refreshTokenValidation(refreshToken)) {
+        } else if (jwtUtil.isTokenValid(refreshToken) && jwtUtil.refreshTokenValidation(refreshToken)) {
             handleRefreshToken(refreshToken, response);
         } else {
             log.info("accessToken과 refreshToken 둘다 만료되었습니다.");

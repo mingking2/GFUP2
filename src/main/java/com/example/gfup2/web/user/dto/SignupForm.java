@@ -25,13 +25,5 @@ public class SignupForm {
     @Schema(description = "사용자 핸드폰 번호", nullable = false, example = "010-12-31")
     private String phoneNumber;
 
-    @NotNull
-    @Schema(description = "사용자 알람 이메일", nullable = false, example = "k12@gmail.com")
-    private String alarmEmailInfo;
-
-    @NotNull
-    @Schema(description = "사용자 알람 핸드폰 번호", nullable = false, example = "010-12-31")
-    private String alarmPhoneNumberInfo;
-
     private String adminToken= "";
 }

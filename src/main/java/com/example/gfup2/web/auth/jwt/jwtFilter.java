@@ -42,7 +42,7 @@ public class jwtFilter extends OncePerRequestFilter {
     }
 
     private boolean isAuthenticationRequired(String uri) {
-        return uri.equals("/auth/signup") || uri.equals("/auth/signin");
+        return uri.equals("/auth/signup") || uri.equals("/auth/signin") || uri.equals("/auth/logout");
     }
 
     private void handleAuthentication(HttpServletRequest request, HttpServletResponse response) {

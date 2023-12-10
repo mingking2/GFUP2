@@ -20,4 +20,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     @Modifying
     @Query("UPDATE RefreshToken r SET r.refreshToken = :newTokenValue WHERE r.accountEmail = :email")
     void updateTokenValueByEmail(@Param("email") String email, @Param("newTokenValue") String newTokenValue);
+
+    @Transactional
+    RefreshToken findByRefreshToken(String refreshToken);
 }

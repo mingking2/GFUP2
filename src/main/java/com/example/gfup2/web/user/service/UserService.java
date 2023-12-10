@@ -54,9 +54,12 @@ public class UserService {
             //토큰 발급
             TokenDto tokenDto = jwtUtil.generateToken(user.getEmailId());
 
-            RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmailId());
-            refreshTokenRepository.save(refreshToken);
-
+            if(refreshTokenRepository.findByAccountEmail(user.getEmailId()).isPresent()) {
+                refreshTokenRepository.updateTokenValueByEmail(user.getEmailId(), tokenDto.getRefreshToken());
+            } else {
+                RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmailId());
+                refreshTokenRepository.save(refreshToken);
+            }
 
             return tokenDto;
         }
@@ -65,7 +68,7 @@ public class UserService {
     }
 
     public ResponseEntity<String> logoutUser(String refreshToken) {
-        if(refreshToken != null) {
+        if(refreshTokenRepository.findByRefreshToken(refreshToken) != null) {
             refreshTokenRepository.deleteByRefreshToken(refreshToken);
             return ResponseEntity.ok().body("Logged out successfully");
         }

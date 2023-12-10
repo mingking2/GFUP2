@@ -21,6 +21,7 @@ public class RefreshToken {
     @Column(columnDefinition = "text")
     private String refreshToken;
 
+    @Column(unique = true)
     private String accountEmail;
 
     public RefreshToken(String refreshToken, String emailId) {

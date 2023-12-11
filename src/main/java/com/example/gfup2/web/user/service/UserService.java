@@ -28,8 +28,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-
-
     public User registerUser(SignupForm form) {
         Optional<User> found = userRepository.findByEmailId(form.getEmailId());
         if (found.isPresent()) {

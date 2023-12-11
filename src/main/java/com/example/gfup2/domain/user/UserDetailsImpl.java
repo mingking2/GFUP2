@@ -1,8 +1,10 @@
 package com.example.gfup2.domain.user;
 
 import com.example.gfup2.domain.user.entity.User;
+
 import java.util.ArrayList;
 import java.util.Collection;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +14,7 @@ public class UserDetailsImpl implements UserDetails {
     private User user;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public static UserDetailsImpl from(User user){
+    public static UserDetailsImpl from(User user) {
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().toString());
         Collection<GrantedAuthority> collection = new ArrayList<>();
         collection.add(simpleGrantedAuthority);

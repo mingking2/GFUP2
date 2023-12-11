@@ -1,6 +1,7 @@
 package com.example.gfup2.web.verification.dto;
 
 import lombok.*;
+
 import java.util.List;
 
 @AllArgsConstructor

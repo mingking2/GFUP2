@@ -14,7 +14,7 @@ import java.util.Properties;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "mail")
-public class AdminConfig {
+public class AdminMailConfig {
 
     private String host;
     private int port;

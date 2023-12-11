@@ -28,8 +28,8 @@ public class SignupForm {
     @Schema(description = "사용자 비밀번호", nullable = false, example = "pwd")
     private String password;
 
-    @Column(nullable=false)
-    @Size(min=11, max=11, message="입력값은 9자리여야 합니다.")
+    @Column(nullable = false)
+    @Size(min=11, max=11, message="입력값은 11자리여야 합니다.")
     @Schema(description = "사용자 핸드폰 번호", nullable = false, example = "010-12-31")
     private String phoneNumber;
 

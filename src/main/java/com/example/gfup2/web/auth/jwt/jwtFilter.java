@@ -42,7 +42,7 @@ public class jwtFilter extends OncePerRequestFilter {
     }
 
     private boolean isAuthenticationRequired(String uri) {
-        return uri.equals("/auth/signup") || uri.equals("/auth/signin");
+        return uri.equals("/auth/signup") || uri.equals("/auth/signin") || uri.equals("/auth/logout");
     }
 
     private void handleAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -51,7 +51,7 @@ public class jwtFilter extends OncePerRequestFilter {
 
         if (accessToken != null && jwtUtil.isTokenValid(accessToken)) {
             authenticateWithToken(accessToken);
-        } else if (jwtUtil.refreshTokenValidation(refreshToken)) {
+        } else if (jwtUtil.isTokenValid(refreshToken) && jwtUtil.refreshTokenValidation(refreshToken)) {
             handleRefreshToken(refreshToken, response);
         } else {
             log.info("accessToken과 refreshToken 둘다 만료되었습니다.");

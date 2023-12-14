@@ -33,7 +33,6 @@ public class VerifySmsController {
     @PostMapping
     public ResponseEntity<Void> verifySms(@RequestBody @Valid SmsDto smsDto) {
         try {
-            log.debug("컨트롤러 진입");
             verifySmsService.sendSms(smsDto);
             return ResponseEntity.ok().build();
         } catch (UnsupportedEncodingException | URISyntaxException | NoSuchAlgorithmException | InvalidKeyException |

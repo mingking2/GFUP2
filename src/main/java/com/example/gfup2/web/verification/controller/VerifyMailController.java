@@ -29,20 +29,21 @@ public class VerifyMailController {
     public ResponseEntity<Void> verifyEmail(@RequestBody @Valid EmailDto emailDto) {
         try {
             verifyMailService.sendMail(emailDto);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); //인증번호 전송이 완료되었습니다. 메시지도 같이 보내주면 좋습니다(클라이언트가 그대로 쓰면 됨)
         } catch (MessagingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); //서버 로직 문제일 경우 500 반환
         }
     }
 
     @PostMapping("/Number")
-    public ResponseEntity<Void> verifyEmailNumber(@RequestBody @Valid VerifyNumberDto verifyNumberDto) {
-        try {
-            verifyMailService.checkVerifyNum(verifyNumberDto);
+    public ResponseEntity<String> verifyEmailNumber(@RequestBody @Valid VerifyNumberDto verifyNumberDto) {
+        boolean isCorrectNum = verifyMailService.checkVerifyNum(verifyNumberDto);
+        if(isCorrectNum){
             return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); //인증틀릴경우 400 반환
+        } else {
+            return ResponseEntity.badRequest().body("인증번호가 다릅니다.");
         }
+
     }
 
 }

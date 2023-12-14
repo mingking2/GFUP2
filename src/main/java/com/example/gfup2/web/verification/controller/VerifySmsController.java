@@ -33,21 +33,23 @@ public class VerifySmsController {
     @PostMapping
     public ResponseEntity<Void> verifySms(@RequestBody @Valid SmsDto smsDto) {
         try {
+            log.debug("컨트롤러 진입");
             verifySmsService.sendSms(smsDto);
             return ResponseEntity.ok().build();
         } catch (UnsupportedEncodingException | URISyntaxException | NoSuchAlgorithmException | InvalidKeyException |
                  JsonProcessingException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); //서버 로직 문제일 경우 500 반환
         }
     }
 
     @PostMapping("/Number")
-    public ResponseEntity<Void> verifySmsNumber(@RequestBody @Valid VerifyNumberDto verifyNumberDto) {
-        try {
-            verifySmsService.checkVerifyNum(verifyNumberDto);
+    public ResponseEntity<String> verifySmsNumber(@RequestBody @Valid VerifyNumberDto verifyNumberDto) {
+        boolean isCorrectNum = verifySmsService.checkVerifyNum(verifyNumberDto);
+        if(isCorrectNum){
             return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); //인증틀릴경우 400 반환
+        } else {
+            return ResponseEntity.badRequest().body("인증번호가 다릅니다.");
         }
     }
 

@@ -1,4 +1,4 @@
-package com.example.gfup2.web.verification.Util;
+package com.example.gfup2.web.verification.util;
 
 import java.util.Random;
 

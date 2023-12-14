@@ -1,7 +1,6 @@
 package com.example.gfup2.web.verification.service;
 
 import com.example.gfup2.config.AdminSmsConfig;
-import com.example.gfup2.web.verification.Util.MakeRandomNum;
 import com.example.gfup2.web.verification.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,19 +25,14 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import static com.example.gfup2.web.verification.Util.MakeRandomNum.*;
+import static com.example.gfup2.web.verification.util.MakeRandomNum.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class VerifySmsService {
-
     private final AdminSmsConfig adminSmsConfig;
-    String VERIFYNUM;
-
-    public VerifySmsService(AdminSmsConfig adminSmsConfig) {
-        this.adminSmsConfig = adminSmsConfig;
-        this.VERIFYNUM = makeRandomNum();
-    }
+    private final String VERIFYNUM = makeRandomNum();
 
     public String makeSignature(Long time) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
         String space = " ";
@@ -96,24 +90,22 @@ public class VerifySmsService {
                 .content(content)
                 .messages(messages)
                 .build();
-        System.out.println("phone" + phone);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String body = objectMapper.writeValueAsString(request);
-        HttpEntity<String> httpBody = new HttpEntity<>(body, headers);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String body = objectMapper.writeValueAsString(request);
+            HttpEntity<String> httpBody = new HttpEntity<>(body, headers);
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/" + adminSmsConfig.getServiceId() + "/messages"), httpBody, NcpResponseDto.class);
     }
 
-
     public boolean checkVerifyNum(VerifyNumberDto verifyNumberDto) {
         String ClientNum = verifyNumberDto.getNumber();
         if (ClientNum.equals(VERIFYNUM)) {
             return true;
         }
-        throw new IllegalArgumentException("인증번호가 다릅니다.");
+        return false;
     }
 
 }

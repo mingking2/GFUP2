@@ -5,28 +5,21 @@ import com.example.gfup2.web.verification.dto.EmailDto;
 import com.example.gfup2.web.verification.dto.VerifyNumberDto;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import static com.example.gfup2.web.verification.Util.MakeRandomNum.makeRandomNum;
+import static com.example.gfup2.web.verification.util.MakeRandomNum.makeRandomNum;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class VerifyMailService {
     private final JavaMailSender mailSender;
     private final AdminMailConfig adminMailConfig;
-    String VERIFYNUM;
-
-    @Autowired
-    public VerifyMailService(JavaMailSender mailSender, AdminMailConfig adminMailConfig) {
-        this.mailSender = mailSender;
-        this.adminMailConfig = adminMailConfig;
-        this.VERIFYNUM = makeRandomNum();
-    }
-
+    private final String VERIFYNUM = makeRandomNum();
 
     public void sendMail(EmailDto emailDto) throws MessagingException {
         //MimeMessage는 이메일 메시지를 나타내는 클래스로, 이메일의 제목, 본문, 수신자, 발신자, 첨부 파일 등을 설정할 수 있음.
@@ -49,7 +42,7 @@ public class VerifyMailService {
         if (ClientNum.equals(VERIFYNUM)) {
             return true;
         }
-        throw new IllegalArgumentException("인증번호가 다릅니다.");
+        return false;
     }
 
 }

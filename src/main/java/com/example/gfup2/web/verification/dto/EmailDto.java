@@ -5,15 +5,11 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class EmailDto { //인증번호 보내기 버튼 클릭시(인증번호확인 버튼이 아님) 이메일은 바로 잠금 되게 프론트에서 조정하기
 
     @Column(nullable=false)

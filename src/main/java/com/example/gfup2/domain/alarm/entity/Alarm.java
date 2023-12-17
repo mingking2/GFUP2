@@ -27,8 +27,6 @@ public class Alarm {
     private LocalDateTime createdAt;
 
     private Long date;
-    private String day;
-    private Long time;
     private Integer repeatNum;
     private String name;
     private Integer method; // 0: 전화, 1: 메세지, 2: 이메일
@@ -37,9 +35,7 @@ public class Alarm {
 
     public static Alarm from(AlarmRequest alarmRequest) {
         Alarm alarm = new Alarm();
-        alarm.day = alarmRequest.getDay();
         alarm.date = alarmRequest.getDate();
-        alarm.time = alarmRequest.getTime();
         alarm.repeatNum = alarmRequest.getRepeatNum();
         alarm.name = alarmRequest.getName();
         alarm.method = alarmRequest.getMethod();

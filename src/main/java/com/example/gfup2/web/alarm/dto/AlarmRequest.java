@@ -13,8 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AlarmRequest {
     private Long date;
-    private String day;
-    private Long time;
     private Integer repeatNum;
     private String name;
     private Integer method;

@@ -28,8 +28,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-
-
     public User registerUser(SignupForm form) {
         Optional<User> found = userRepository.findByEmailId(form.getEmailId());
         if (found.isPresent()) {
@@ -41,7 +39,6 @@ public class UserService {
         User user = User.from(form, passwordEncoder.encode(form.getPassword()), role);
         return userRepository.save(user);
     }
-
 
     public TokenDto loginUser(SigninForm form) {
 

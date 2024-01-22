@@ -1,10 +1,8 @@
 package com.example.gfup2.config;
 
-import com.example.gfup2.web.auth.jwt.jwtFilter;
-import com.example.gfup2.web.auth.jwt.JwtAuthEntryPoint;
+import com.example.gfup2.security.jwt.jwtFilter;
+import com.example.gfup2.security.jwt.JwtAuthEntryPoint;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

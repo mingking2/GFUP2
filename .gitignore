@@ -36,3 +36,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### security.properties ###
+/src/main/resources/security.properties

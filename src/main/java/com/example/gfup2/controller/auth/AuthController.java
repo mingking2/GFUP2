@@ -1,5 +1,7 @@
 package com.example.gfup2.controller.auth;
 
+import com.example.gfup2.controller.ControllerBase;
+import com.example.gfup2.exception.VerifyException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,41 +35,43 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> authSignup(@RequestBody @Valid SignUpDto dt, BindingResult bindingResult){
-        try{
-            CheckError.checkValidException(bindingResult);
+        return AuthControllerBase.run(bindingResult,()->{
 
             String email = dt.getEmail();
             String phoneNumber = dt.getPhoneNumber();
             String password = dt.getPassword();
-            String emailToken = dt.getEmailToken();
-            String phoneNumberToken = dt.getPhoneNumberToken();
 
-            if (!email.equals(emailService.getEmailByToken(emailToken))){
+            if (!email.equals(emailService.getEmailByToken(dt.getEmailToken()))){
                 return new ResponseEntity<String>("입력된 이메일과 인증된 이메일이 다름", HttpStatus.BAD_REQUEST);
             }
-            if (!phoneNumber.equals(smsService.getPhoneNumberByToken(phoneNumberToken))){
+            if (!phoneNumber.equals(smsService.getPhoneNumberByToken(dt.getPhoneNumberToken()))){
                 return new ResponseEntity<String>("입력된 전화번호와 인증된 이메일이 다름", HttpStatus.BAD_REQUEST);
             }
             this.userService.registerUser(email, phoneNumber, password);
             return new ResponseEntity<>(HttpStatus.OK);
-        }catch(ValidException e){
-            return new ResponseEntity<Map<String, String>>(e.getErrors(), HttpStatus.BAD_REQUEST);
-        }catch(Exception e){
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        });
     }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authSignIn(@RequestBody @Valid SignInDto dt, BindingResult bindingResult){
-        try{
-            CheckError.checkValidException(bindingResult);
+        return AuthControllerBase.run(bindingResult,()->{
             return new ResponseEntity<RefreshAccessTokenProvider.TokenInfo>(
                     this.userService.logIn(dt.getEmail(), dt.getPassword()),HttpStatus.OK
             );
-        }catch(ValidException e){
-            return new ResponseEntity<Map<String, String>>(e.getErrors(), HttpStatus.BAD_REQUEST);
-        }catch(Exception e){
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        });
+    }
+
+    private static class AuthControllerBase {
+        public static ResponseEntity<?> run(BindingResult bindingResult,ControllerBase base){
+            try{
+                CheckError.checkValidException(bindingResult);
+                return base.run();
+            }catch(ValidException e){
+                return new ResponseEntity<Map<String, String>>(e.getErrors(), HttpStatus.BAD_REQUEST);
+            }catch(Exception e){
+                return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
         }
+
     }
 }

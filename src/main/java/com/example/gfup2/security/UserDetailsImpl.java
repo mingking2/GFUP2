@@ -1,27 +1,22 @@
 package com.example.gfup2.security;
 
-import com.example.gfup2.domain.model.User;
-import java.util.ArrayList;
-import java.util.Collection;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.example.gfup2.domain.model.User;
 
+import java.util.Collection;
+import java.util.Collections;
+
+@Getter
 public class UserDetailsImpl implements UserDetails {
-
-    private User user;
-    private Collection<? extends GrantedAuthority> authorities;
-
-    public static UserDetailsImpl from(User user){
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().toString());
-        Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(simpleGrantedAuthority);
-
-        UserDetailsImpl userDetails = new UserDetailsImpl();
-        userDetails.user = user;
-        userDetails.authorities = collection;
-
-        return userDetails;
+    private final User user;
+    private final Collection<? extends GrantedAuthority> authorities;
+    public UserDetailsImpl(User user){
+        if(user == null) throw new IllegalArgumentException("User cannot be null");
+        this.user = user;
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().toString()));
     }
 
     @Override
@@ -31,12 +26,12 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return this.user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getEmailId();
+        return this.user.getEmailId();
     }
 
     @Override

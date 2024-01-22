@@ -41,11 +41,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (tokenData.type().equals(Constants.REFRESH_TOKEN)){
                     RefreshAccessTokenProvider.TokenInfo tokenInfo = this.refreshAccessTokenProvider.getAccessToken(userName);
                     response.addHeader(
-                            "AccessToken",
+                            Constants.ACCESS_TOKEN,
                             tokenInfo.getAccessToken()
                     );
                     response.addHeader(
-                            "AccessTokenExpireTime",
+                            Constants.ACCESS_TOKEN_EXPIRATION,
                             tokenInfo.getExpirationTimeFromAccessToken().toString()
                     );
                 }

@@ -1,5 +1,6 @@
 package com.example.gfup2.domain.service;
 
+import com.example.gfup2.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.example.gfup2.domain.model.Alarm;
@@ -49,7 +50,7 @@ public class AlarmService {
 
     public Alarm read(User user, Long id) throws EntityException {
         Optional<Alarm> temp = this.alarmRepo.findByUser_IdAndId(user.getId(), id);
-        if(temp.isEmpty()) throw new EntityException("존재하지 않음");
+        if(temp.isEmpty()) throw new EntityException(Constants.RECORD_NOT_EXIST);
         return temp.get();
     }
 

@@ -1,6 +1,7 @@
 package com.example.gfup2.domain.service;
 
 
+import com.example.gfup2.constants.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -12,7 +13,6 @@ import com.example.gfup2.domain.repository.UserRepository;
 import com.example.gfup2.exception.EmailException;
 import com.example.gfup2.exception.LogInException;
 import com.example.gfup2.exception.VerifyException;
-import com.example.gfup2.security.UserDetailsImpl;
 import com.example.gfup2.security.jwt.RefreshAccessTokenProvider;
 
 import java.util.Optional;
@@ -29,7 +29,7 @@ public class UserService {
         password = this.passwordEncoder.encode(password);
 
         Optional<User> found = this.userRepo.findByEmailId(emailId);
-        if(found.isPresent()) throw new EmailException("이메일 중복");
+        if(found.isPresent()) throw new EmailException(Constants.SIGNUP_EMAIL_EXIST);
 
         this.userRepo.save(new User(
                 emailId,
@@ -53,7 +53,7 @@ public class UserService {
     public User getAuthUserFromSecurityContextHolder() throws VerifyException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> found = this.userRepo.findByEmailId(auth.getName());
-        if(found.isEmpty()) throw new VerifyException("잘못된 요청");
+        if(found.isEmpty()) throw new VerifyException(Constants.BAD_REQUEST);
         return found.get();
     }
 

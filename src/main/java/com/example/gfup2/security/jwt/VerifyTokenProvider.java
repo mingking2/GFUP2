@@ -1,5 +1,6 @@
 package com.example.gfup2.security.jwt;
 
+import com.example.gfup2.constants.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
@@ -43,9 +44,9 @@ public class VerifyTokenProvider extends TokenManager{
 
     public VerifyData getPreAuthenticationTokenData(String token){
         List<String> keys = new ArrayList<String>();
-        keys.add("vnm");
+        keys.add(Constants.VERIFY_CODE_KEY_NAME);
         TokenData dt =  getTokenDataFromToken(token, keys);
-        return new VerifyData(dt.subject(), dt.type(), dt.data().get("vnm"));
+        return new VerifyData(dt.subject(), dt.type(), dt.data().get(Constants.VERIFY_CODE_KEY_NAME));
     }
 
     public VerifyData getPostAuthenticationTokenData(String token){

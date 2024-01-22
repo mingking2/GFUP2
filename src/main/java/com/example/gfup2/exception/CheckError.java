@@ -1,5 +1,6 @@
 package com.example.gfup2.exception;
 
+import com.example.gfup2.constants.Constants;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -13,7 +14,7 @@ public class CheckError {
             for (FieldError error : bindingResult.getFieldErrors()){
                 errors.put(error.getField(), error.getDefaultMessage());
             }
-            throw new ValidException("올바르지 않은 값",errors);
+            throw new ValidException(Constants.VALID_ERROR,errors);
         }
     }
 }

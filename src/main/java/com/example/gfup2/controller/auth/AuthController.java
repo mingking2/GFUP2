@@ -1,5 +1,6 @@
 package com.example.gfup2.controller.auth;
 
+import com.example.gfup2.constants.Constants;
 import com.example.gfup2.controller.ControllerBase;
 import com.example.gfup2.exception.VerifyException;
 import jakarta.validation.Valid;
@@ -42,10 +43,10 @@ public class AuthController {
             String password = dt.getPassword();
 
             if (!email.equals(emailService.getEmailByToken(dt.getEmailToken()))){
-                return new ResponseEntity<String>("입력된 이메일과 인증된 이메일이 다름", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<String>(Constants.SIGNUP_EMAIL_DIFFERENT_ERROR, HttpStatus.BAD_REQUEST);
             }
             if (!phoneNumber.equals(smsService.getPhoneNumberByToken(dt.getPhoneNumberToken()))){
-                return new ResponseEntity<String>("입력된 전화번호와 인증된 이메일이 다름", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<String>(Constants.SIGNUP_PHONE_NUMBER_DIFFERENT_ERROR, HttpStatus.BAD_REQUEST);
             }
             this.userService.registerUser(email, phoneNumber, password);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -72,6 +73,5 @@ public class AuthController {
                 return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
             }
         }
-
     }
 }

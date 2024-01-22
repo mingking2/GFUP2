@@ -1,80 +1,61 @@
 package com.example.gfup2.domain.service;
 
 
-import com.example.gfup2.domain.model.RefreshToken;
-import com.example.gfup2.domain.model.User;
-import com.example.gfup2.domain.model.UserRoleEnum;
-import com.example.gfup2.domain.repository.RefreshTokenRepository;
-import com.example.gfup2.domain.repository.UserRepository;
-import com.example.gfup2.security.jwt.JwtUtil;
-import com.example.gfup2.dto.TokenDto;
-import com.example.gfup2.dto.SigninForm;
-import com.example.gfup2.dto.SignupForm;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.example.gfup2.domain.model.User;
+import com.example.gfup2.domain.repository.UserRepository;
+import com.example.gfup2.exception.EmailException;
+import com.example.gfup2.exception.LogInException;
+import com.example.gfup2.exception.VerifyException;
+import com.example.gfup2.security.UserDetailsImpl;
+import com.example.gfup2.security.jwt.RefreshAccessTokenProvider;
 
-@Slf4j
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
-
-
-    private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final RefreshAccessTokenProvider refreshAccessTokenProvider;
 
-    public User registerUser(SignupForm form) {
-        Optional<User> found = userRepository.findByEmailId(form.getEmailId());
-        if (found.isPresent()) {
-            throw new IllegalArgumentException("중복중복");
-        }
+    public void registerUser(String emailId, String phoneNumber, String password) throws EmailException {
+        password = this.passwordEncoder.encode(password);
 
-        UserRoleEnum role = UserRoleEnum.USER;
+        Optional<User> found = this.userRepo.findByEmailId(emailId);
+        if(found.isPresent()) throw new EmailException("이메일 중복");
 
-        User user = User.from(form, passwordEncoder.encode(form.getPassword()), role);
-        return userRepository.save(user);
+        this.userRepo.save(new User(
+                emailId,
+                password,
+                phoneNumber,
+                emailId,
+                phoneNumber
+        ));
     }
 
-    public TokenDto loginUser(SigninForm form) {
+    public RefreshAccessTokenProvider.TokenInfo logIn(String emailId, String password) throws LogInException{
+        password = this.passwordEncoder.encode(password);
+        log.info("{} {} 로그인 시도",emailId, password);
 
-        User user = userRepository.findByEmailId(form.getEmailId())
-                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않음"));
+        Optional<User> found = this.userRepo.findByEmailId(emailId);
+        if(found.isEmpty() || !this.passwordEncoder.matches(password, found.get().getPassword())) throw new LogInException("일치하는 회원정보 없음");
 
-        //유저가 존재하면
-        if (passwordEncoder.matches(form.getPassword(), user.getPassword())) { //패스워드 확인 후 맞으면
-
-            //토큰 발급
-            TokenDto tokenDto = jwtUtil.generateToken(user.getEmailId());
-
-            if(refreshTokenRepository.findByAccountEmail(user.getEmailId()).isPresent()) {
-                refreshTokenRepository.updateTokenValueByEmail(user.getEmailId(), tokenDto.getRefreshToken());
-            } else {
-                RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmailId());
-                refreshTokenRepository.save(refreshToken);
-            }
-
-            return tokenDto;
-        }
-
-        throw new IllegalArgumentException("패스워드가 다름");
+        return this.refreshAccessTokenProvider.getToken(emailId);
     }
 
-    public ResponseEntity<String> logoutUser(String refreshToken) {
-        if(refreshTokenRepository.findByRefreshToken(refreshToken) != null) {
-            refreshTokenRepository.deleteByRefreshToken(refreshToken);
-            return ResponseEntity.ok().body("Logged out successfully");
-        }
-        return ResponseEntity.badRequest().body("리프레쉬 토큰이 왜 없지");
+    public User getAuthUserFromSecurityContextHolder() throws VerifyException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> found = this.userRepo.findByEmailId(auth.getName());
+        if(found.isEmpty()) throw new VerifyException("잘못된 요청");
+        return found.get();
     }
 
-    public String getHeaders(String authorization) {
-        // 인증
-        return authorization;
-    }
 
 }

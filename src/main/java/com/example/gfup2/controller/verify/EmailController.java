@@ -17,7 +17,7 @@ import com.example.gfup2.service.EmailService;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/verify/email")
+@RequestMapping("/api/verify/email")
 @RequiredArgsConstructor
 public class EmailController {
     private final EmailService emailService;

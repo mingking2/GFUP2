@@ -14,7 +14,7 @@ import com.example.gfup2.exception.VerifyException;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;

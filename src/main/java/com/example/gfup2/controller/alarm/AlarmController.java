@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/alarm")
+@RequestMapping("/api/alarm")
 @RequiredArgsConstructor
 public class AlarmController {
     private final UserService userService;

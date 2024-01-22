@@ -19,7 +19,7 @@ import com.example.gfup2.service.SmsService;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/verify/sms")
+@RequestMapping("/api/verify/sms")
 @RequiredArgsConstructor
 public class SmsController {
     private final SmsService smsService;

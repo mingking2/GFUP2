@@ -1,66 +1,59 @@
 package com.example.gfup2.domain.model;
 
 
-import com.example.gfup2.dto.SignupForm;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access= AccessLevel.PROTECTED, force = true)
 public class User {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    @Schema(description = "사용자 이메일", nullable = false, example = "k12@gmail.com")
+    @Column(nullable=false, unique = true, length=254)
     private String emailId;
 
-    @Column(nullable = false)
-    @Schema(description = "사용자 비밀번호", nullable = false, example = "pwd")
+    @Column(nullable=false, length=30)
     private String password;
 
-    @Column(nullable = false, unique = true)
-    @Schema(description = "사용자 핸드폰 번호", nullable = false, example = "010-12-31")
+    @Column(nullable=false, unique=true, length=20)
     private String phoneNumber;
 
-    @Column(nullable = false, unique = true)
-    @Schema(description = "사용자 알람 이메일", nullable = false, example = "k12@gmail.com")
+    @Column(nullable=false, unique = true, length=254)
     private String alarmEmailInfo;
 
-    @Column(nullable = false, unique = true)
-    @Schema(description = "사용자 알람 핸드폰 번호", nullable = false, example = "010-12-31")
+    @Column(nullable=false, unique=true, length=20)
     private String alarmPhoneNumberInfo;
 
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false, length=10)
     private UserRoleEnum role;
 
-    public static User from(SignupForm form, String password, UserRoleEnum role){
-        User user = new User();
-        user.emailId = form.getEmailId();
-        user.password = password;
-        user.phoneNumber = form.getPhoneNumber();
-        user.alarmEmailInfo = form.getEmailId();
-        user.alarmPhoneNumberInfo = form.getPhoneNumber();
-        user.role = role;
-        return user;
+    @OneToMany(mappedBy="user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Alarm> alarms = new ArrayList<>();
+
+    public User(String emailId, String password, String phoneNumber, String alarmEmailInfo, String alarmPhoneNumberInfo, UserRoleEnum role){
+        this.id = null;
+        this.emailId = emailId;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.alarmEmailInfo = alarmEmailInfo;
+        this.alarmPhoneNumberInfo = alarmPhoneNumberInfo;
+        this.role = role;
     }
 
-
-
-
+    public User(String emailId, String password, String phoneNumber, String alarmEmailInfo, String alarmPhoneNumberInfo){
+        this(emailId, password, phoneNumber, alarmEmailInfo, alarmPhoneNumberInfo, UserRoleEnum.User);
+    }
+    public enum UserRoleEnum{
+        User, ADMIN
+    }
 }
+

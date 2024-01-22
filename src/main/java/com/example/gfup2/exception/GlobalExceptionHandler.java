@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
+@Deprecated
 public class GlobalExceptionHandler {
 
     @ExceptionHandler

@@ -1,26 +1,22 @@
 package com.example.gfup2.security;
 
-import com.example.gfup2.domain.model.User;
-import com.example.gfup2.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
+import com.example.gfup2.domain.model.User;
+import com.example.gfup2.domain.repository.UserRepository;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-
     private final UserRepository userRepository;
 
     @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String userEmailId) throws UsernameNotFoundException {
-        User user = userRepository.findByEmailId(userEmailId)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user_ = userRepository.findByEmailId(username)
                 .orElseThrow(()->new UsernameNotFoundException("user not found"));
-
-        return UserDetailsImpl.from(user);
+        return new UserDetailsImpl(user_);
     }
 }

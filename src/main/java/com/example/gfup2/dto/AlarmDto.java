@@ -6,8 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import study.gfup.domain.model.Alarm;
-import study.gfup.domain.model.DaysOfWeek;
+import com.example.gfup2.domain.model.Alarm;
+import com.example.gfup2.domain.model.DaysOfWeek;
 
 import java.util.ArrayList;
 import java.util.List;

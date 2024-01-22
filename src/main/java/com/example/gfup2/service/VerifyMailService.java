@@ -1,6 +1,6 @@
 package com.example.gfup2.service;
 
-import com.example.gfup2.config.AdminMailConfig;
+import com.example.gfup2.config.EmailConfig;
 import com.example.gfup2.dto.EmailDto;
 import com.example.gfup2.dto.VerifyNumberDto;
 import jakarta.mail.MessagingException;
@@ -18,14 +18,14 @@ import static com.example.gfup2.util.MakeRandomNum.makeRandomNum;
 @RequiredArgsConstructor
 public class VerifyMailService {
     private final JavaMailSender mailSender;
-    private final AdminMailConfig adminMailConfig;
+    private final EmailConfig emailConfig;
     private final String VERIFYNUM = makeRandomNum();
 
     public void sendMail(EmailDto emailDto) throws MessagingException {
         //MimeMessage는 이메일 메시지를 나타내는 클래스로, 이메일의 제목, 본문, 수신자, 발신자, 첨부 파일 등을 설정할 수 있음.
         MimeMessage mail = mailSender.createMimeMessage();
         MimeMessageHelper h = new MimeMessageHelper(mail, "UTF-8");
-        h.setFrom(adminMailConfig.getAdminmail()); // 앞서 설정한 본인의 Naver Email. 발신메일
+        h.setFrom(emailConfig.getAdminmail()); // 앞서 설정한 본인의 Naver Email. 발신메일
         String setToMail = emailDto.getEmail(); // 클라이언트의 이메일
         h.setTo(setToMail);
 

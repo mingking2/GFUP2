@@ -5,8 +5,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/user")
+//@RestController
+//@RequestMapping("/user")
+@Deprecated
 public class InfoController {
 
     @GetMapping("/profile")

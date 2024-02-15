@@ -1,46 +1,43 @@
 package com.example.gfup2.config;
 
-import com.example.gfup2.web.auth.jwt.jwtFilter;
-import com.example.gfup2.web.auth.jwt.JwtAuthEntryPoint;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import com.example.gfup2.security.NoEncodingPasswordEncoder;
+import com.example.gfup2.security.jwt.JwtAuthEntryPoint;
+import com.example.gfup2.security.jwt.JwtAuthenticationFilter;
 
 @Configuration
-@AllArgsConstructor
 @EnableWebSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
-
-    private jwtFilter jwtFilter;
-    private JwtAuthEntryPoint jwtAuthEntryPoint;
+    private final JwtAuthEntryPoint jwtAuthEntryPoint;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder(){
+//        return new BCryptPasswordEncoder();
+        return new NoEncodingPasswordEncoder();
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .csrf().disable()
-                .cors().disable();
-
-        return httpSecurity
-                .authorizeHttpRequests(
-                        auth -> auth
-                                .requestMatchers("/auth/**").permitAll()
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(requests->
+                        requests
+                                .requestMatchers("/static/**").permitAll()
+                                .requestMatchers("/*").permitAll()
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/verify/**").permitAll()
                                 .requestMatchers(
                                         "/swagger-resources/**",
                                         "/swagger-ui/**",
@@ -49,19 +46,13 @@ public class SecurityConfig {
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )
-                .exceptionHandling(
-                        config -> config
-                                .authenticationEntryPoint(jwtAuthEntryPoint)
+                .exceptionHandling(config->
+                        config.authenticationEntryPoint(this.jwtAuthEntryPoint)
                 )
-                .sessionManagement(
-                        it -> it
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(it->
+                        it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception
-    { return authenticationConfiguration.getAuthenticationManager();}
 }
